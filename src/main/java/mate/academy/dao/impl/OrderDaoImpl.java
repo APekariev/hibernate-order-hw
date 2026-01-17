@@ -1,9 +1,10 @@
 package mate.academy.dao.impl;
 
-import jakarta.persistence.NoResultException;
-import jakarta.persistence.criteria.*;
-
-import java.security.spec.ECField;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Fetch;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Root;
 import java.util.List;
 import java.util.Optional;
 import mate.academy.dao.OrderDao;
@@ -47,15 +48,20 @@ public class OrderDaoImpl implements OrderDao {
     public Optional<List<Order>> getByUser(User user) {
         try (Session session = sessionFactory.openSession()) {
             CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
-            CriteriaQuery<Order> query = criteriaBuilder.createQuery(Order.class);
+            CriteriaQuery<Order> query = criteriaBuilder
+                    .createQuery(Order.class);
             Root<Order> root = query.from(Order.class);
-            Fetch<Object, Object> ticketsRoot = root.fetch("tickets", JoinType.LEFT);
+            Fetch<Object, Object> ticketsRoot = root
+                    .fetch("tickets", JoinType.LEFT);
             Fetch<Object, Object> userRoot = root.fetch("user", JoinType.LEFT);
-            Fetch<Object, Object> movieSessionRoot = ticketsRoot.fetch("movieSession", JoinType.LEFT);
+            Fetch<Object, Object> movieSessionRoot = ticketsRoot
+                    .fetch("movieSession", JoinType.LEFT);
             movieSessionRoot.fetch("movie",JoinType.LEFT);
             movieSessionRoot.fetch("cinemaHall", JoinType.LEFT);
-            query.select(root).where(criteriaBuilder.equal(root.get("user"), user));
-            return Optional.ofNullable(session.createQuery(query).getResultList());
+            query.select(root).where(criteriaBuilder
+                    .equal(root.get("user"), user));
+            return Optional.ofNullable(session.createQuery(query)
+                    .getResultList());
         } catch (Exception e) {
             throw new DataProcessingException("Can not get a list of orders of user: "
                                                 + user, e);
