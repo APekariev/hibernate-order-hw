@@ -58,7 +58,7 @@ public class OrderDaoImpl implements OrderDao {
                     .fetch("movieSession", JoinType.LEFT);
             movieSessionRoot.fetch("movie",JoinType.LEFT);
             movieSessionRoot.fetch("cinemaHall", JoinType.LEFT);
-            query.select(root).where(criteriaBuilder
+            query.select(root).distinct(true).where(criteriaBuilder
                     .equal(root.get("user"), user));
             return Optional.ofNullable(session.createQuery(query)
                     .getResultList());
