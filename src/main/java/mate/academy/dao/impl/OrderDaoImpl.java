@@ -1,9 +1,9 @@
 package mate.academy.dao.impl;
 
 import jakarta.persistence.NoResultException;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.*;
+
+import java.security.spec.ECField;
 import java.util.List;
 import java.util.Optional;
 import mate.academy.dao.OrderDao;
@@ -49,10 +49,16 @@ public class OrderDaoImpl implements OrderDao {
             CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
             CriteriaQuery<Order> query = criteriaBuilder.createQuery(Order.class);
             Root<Order> root = query.from(Order.class);
-            query.where(criteriaBuilder.equal(root.get("user"), user));
+            Fetch<Object, Object> ticketsRoot = root.fetch("tickets", JoinType.LEFT);
+            Fetch<Object, Object> userRoot = root.fetch("user", JoinType.LEFT);
+            Fetch<Object, Object> movieSessionRoot = ticketsRoot.fetch("movieSession", JoinType.LEFT);
+            movieSessionRoot.fetch("movie",JoinType.LEFT);
+            movieSessionRoot.fetch("cinemaHall", JoinType.LEFT);
+            query.select(root).where(criteriaBuilder.equal(root.get("user"), user));
             return Optional.ofNullable(session.createQuery(query).getResultList());
-        } catch (NoResultException e) {
-            return Optional.empty();
+        } catch (Exception e) {
+            throw new DataProcessingException("Can not get a list of orders of user: "
+                                                + user, e);
         }
     }
 }

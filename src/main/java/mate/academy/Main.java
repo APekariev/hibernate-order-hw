@@ -67,13 +67,12 @@ public class Main {
                 .getInstance(AuthenticationService.class);
         ShoppingCartService shoppingCartService = (ShoppingCartService) injector
                 .getInstance(ShoppingCartService.class);
-        User user1 = authenticationService.register("a98765k80l000@gmail.com", "defgh");
+        User user1 = authenticationService.register("a98765k80l0nkb00@gmail.com", "defgh");
         shoppingCartService.addSession(tomorrowMovieSession, user1);
         ShoppingCart userShoppingCart1 = shoppingCartService.getByUser(user1);
 
         OrderService orderService = (OrderService) injector.getInstance(OrderService.class);
         orderService.completeOrder(userShoppingCart1);
-        shoppingCartService.clearShoppingCart(userShoppingCart1);
-        orderService.getOrdersHistory(user1);
+        System.out.println(orderService.getOrdersHistory(user1));
     }
 }
